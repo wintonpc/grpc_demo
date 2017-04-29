@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package restaurant;
+
+service Cookbook {
+    rpc GetRecipe(RecipeRequest) returns (RecipeResponse) {}
+}
+
+message RecipeRequest {
+    string name = 1;
+}
+
+message RecipeResponse {
+    Recipe recipe = 1;
+}
+
+message Recipe {
+    repeated string ingredients = 1;
+}
