@@ -11,7 +11,7 @@ require 'restaurant_services_pb'
 
 def main
   cookbook = Restaurant::Cookbook::Stub.new('localhost:50051', :this_channel_is_insecure)
-  recipe = cookbook.get_recipe(Restaurant::RecipeRequest.new(name: 'cherry pie')).recipe
+  recipe = cookbook.get_recipe(Restaurant::RecipeRequest.new(name: ARGV[0] || 'cherry pie')).recipe
   puts "Recipe: #{recipe.ingredients.join(', ')}"
 end
 

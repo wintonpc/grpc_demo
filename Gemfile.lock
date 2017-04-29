@@ -1,3 +1,9 @@
+PATH
+  remote: /home/pwinton/git/rambda
+  specs:
+    rambda (0.1.0)
+      oj
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -25,6 +31,7 @@ GEM
     memoist (0.15.0)
     multi_json (1.12.1)
     multipart-post (2.0.0)
+    oj (2.18.2)
     os (0.9.6)
     public_suffix (2.0.5)
     signet (0.7.3)
@@ -38,6 +45,7 @@ PLATFORMS
 
 DEPENDENCIES
   grpc
+  rambda!
 
 BUNDLED WITH
-   1.14.5
+   1.14.6
