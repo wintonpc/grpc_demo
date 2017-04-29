@@ -13,7 +13,13 @@ require 'capabilities'
 require 'banzai'
 
 def main
-  Banzai.start_workflow(:bake, 'cherry pie')
+
+  if ARGV[0]
+    wfid = ARGV[0]
+    Banzai.new.resume_workflow(wfid)
+  else
+    Banzai.new.start_workflow(:bake, 'cherry pie')
+  end
 end
 
 main

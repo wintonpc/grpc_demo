@@ -9,6 +9,7 @@ GEM
   specs:
     addressable (2.5.1)
       public_suffix (~> 2.0, >= 2.0.2)
+    bson (4.1.1)
     faraday (0.12.1)
       multipart-post (>= 1.2, < 3)
     google-protobuf (3.2.0.2)
@@ -29,6 +30,8 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     memoist (0.15.0)
+    mongo (2.3.0)
+      bson (~> 4.1)
     multi_json (1.12.1)
     multipart-post (2.0.0)
     oj (2.18.2)
@@ -45,6 +48,8 @@ PLATFORMS
 
 DEPENDENCIES
   grpc
+  mongo
+  oj
   rambda!
 
 BUNDLED WITH

@@ -18,8 +18,11 @@ module Capabilities
     (begin
       (set! cookbook (get-service 'cookbook))
       (set! cb-request (make-cookbook-request recipe-name))
-      (set! recipe (.recipe (.get_recipe cookbook cb-request)))
-      (ruby-call-proc "|x| puts x" (.ingredients recipe)))))
+      (set! cb-response (.get_recipe cookbook cb-request))
+      (set! recipe (.recipe cb-response))
+      (set! ingredients (vector->list (.ingredients recipe)))
+      (ruby-eval "raise 'oops' if ENV['FAIL']")
+      (map ingredients (lambda (x) (ruby-call-proc "|x| puts x" x))))))
 EOD
         end
     }
