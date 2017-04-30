@@ -5,10 +5,11 @@ module Capabilities
     }
   end
 
-  def workflows
-    @workflows ||= {
-        bake: define_workflow_from_file('bake')
-    }
+  def register_workflows
+    unless @registered_workflows
+      @registered_workflows = true
+      define_workflow_from_file('bake')
+    end
   end
 
   private

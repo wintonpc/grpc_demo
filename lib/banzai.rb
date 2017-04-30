@@ -14,7 +14,9 @@ class Banzai
     id = "#{name}-#{SecureRandom.hex(4)}"
     puts "Starting workflow #{id}"
     observer = Observer.new(id, @wf_gateway, @kv_gateway)
-    Rambda.apply(Capabilities.workflows[name], *args, Banzai.make_workflow_env, observer: observer)
+    Capabilities.register_workflows
+    env = Banzai.make_workflow_env
+    Rambda.apply(env.look_up(name), *args, env, observer: observer)
   end
 
   def resume_workflow(wfid)
