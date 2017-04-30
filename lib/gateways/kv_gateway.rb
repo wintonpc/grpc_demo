@@ -16,6 +16,7 @@ class KVGateway
   end
 
   def fetch(bucket, key)
-    @client[:data].find({b: bucket, k: key}).limit(1).to_a[0]['v']
+    doc = @client[:data].find({b: bucket, k: key}).limit(1).to_a[0]
+    doc && doc['v']
   end
 end

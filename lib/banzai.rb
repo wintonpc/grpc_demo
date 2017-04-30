@@ -2,6 +2,7 @@ require 'securerandom'
 require 'oj'
 require 'gateways/workflow_gateway'
 require 'gateways/kv_gateway'
+require 'zlib'
 
 class Banzai
   def initialize(wf_gateway=WorkflowGateway.new, kv_gateway=KVGateway.new)
@@ -18,11 +19,24 @@ class Banzai
 
   def resume_workflow(wfid)
     puts "Resuming workflow #{wfid}"
+    bucket           = 'wfstates'
+    key              = wfid
+    value = @kv_gateway.fetch(bucket, key)
+    if value
+      state = Oj.load(Zlib::Inflate.inflate(Base64.decode64(value)), mode: :object, circular: true)
+      observer = Observer.new(wfid, @wf_gateway, @kv_gateway)
+      Rambda::VM.resume(state, observer: observer)
+    else
+      puts "Workflow #{wfid} already completed"
+    end
+  end
+
+  def cancel_workflow(wfid)
+    puts "Cancelling workflow #{wfid}"
     bucket = 'wfstates'
     key = wfid
-    state = Oj.load(@kv_gateway.fetch(bucket, key), mode: :object, circular: true)
-    observer = Observer.new(wfid, @wf_gateway, @kv_gateway)
-    Rambda::VM.resume(state, observer: observer)
+    @kv_gateway.delete(bucket, key)
+    # probably should notify someone too...
   end
 
   def self.define_workflow
@@ -40,7 +54,7 @@ class Banzai
     def returned(state)
       bucket = 'wfstates'
       key = @wfid
-      @kv_gateway.store(bucket, key, Oj.dump(state, mode: :object, circular: true))
+      @kv_gateway.store(bucket, key, Base64.encode64(Zlib::Deflate.deflate(Oj.dump(state, mode: :object, circular: true))))
     end
 
     def halted
