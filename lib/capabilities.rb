@@ -1,7 +1,8 @@
 module Capabilities
   def services
     @services ||= {
-        cookbook: Restaurant::Cookbook::Stub.new('localhost:50051', :this_channel_is_insecure)
+        cookbook: Restaurant::Cookbook::Stub.new('localhost:50051', :this_channel_is_insecure),
+        sous_chef: Restaurant::SousChef::Stub.new('localhost:50051', :this_channel_is_insecure),
     }
   end
 

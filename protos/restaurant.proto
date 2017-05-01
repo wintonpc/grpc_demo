@@ -3,17 +3,33 @@ syntax = "proto3";
 package restaurant;
 
 service Cookbook {
-    rpc GetRecipe(RecipeRequest) returns (RecipeResponse) {}
+  rpc GetRecipe(RecipeRequest) returns (RecipeResponse) {}
+}
+
+service SousChef {
+  rpc Prepare(IngredientRequest) returns (IngredientResponse) {}
 }
 
 message RecipeRequest {
-    string name = 1;
+  string name = 1;
 }
 
 message RecipeResponse {
-    Recipe recipe = 1;
+  Recipe recipe = 1;
 }
 
 message Recipe {
-    repeated string ingredients = 1;
+  repeated string ingredients = 1;
+}
+
+message IngredientRequest {
+  string name = 1;
+}
+
+message IngredientResponse {
+  Ingredient ingredient = 1;
+}
+
+message Ingredient {
+  string description = 1;
 }

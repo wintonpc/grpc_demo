@@ -1,11 +1,20 @@
-(define (bake recipe-name)
-  (define (make-cookbook-request name)
-    (ruby-call-proc "|x| Restaurant::RecipeRequest.new(name: x)" name))
+(define (get-recipe name)
+  (puts "Getting recipe")
+  (let* ([cookbook (get-service 'cookbook)]
+         [request  (ruby-call-proc "|x| Restaurant::RecipeRequest.new(name: x)" name)]
+         [response (.get_recipe cookbook request)])
+    (.recipe response)))
 
-  (let* ([cookbook    (get-service 'cookbook)]
-         [cb-request  (make-cookbook-request recipe-name)]
-         [cb-response (.get_recipe cookbook cb-request)]
-         [recipe      (.recipe cb-response)]
-         [ingredients (vector->list (.ingredients recipe))])
-    (ruby-eval "raise 'oops' if ENV['FAIL']")
-    (map puts ingredients)))
+(define (prepare-ingredient name)
+  (puts "Preparing " name)
+  (let* ([sous-chef (get-service 'sous_chef)]
+         [request  (ruby-call-proc "|x| Restaurant::IngredientRequest.new(name: x)" name)]
+         [response (.prepare sous-chef request)])
+    (.ingredient response)))
+
+(define (bake recipe-name)
+  (puts "Baking a " recipe-name)
+  (let* ([recipe (get-recipe recipe-name)]
+         [ingredient-names (vector->list (.ingredients recipe))])
+    ;; (ruby-eval "raise 'oops' if ENV['FAIL']")
+    (map prepare-ingredient ingredient-names)))

@@ -3,6 +3,7 @@ require 'oj'
 require 'gateways/workflow_gateway'
 require 'gateways/kv_gateway'
 require 'zlib'
+require 'pp'
 
 class Banzai
   def initialize(wf_gateway=WorkflowGateway.new, kv_gateway=KVGateway.new)
@@ -25,7 +26,7 @@ class Banzai
     key              = wfid
     value = @kv_gateway.fetch(bucket, key)
     if value
-      state = Oj.load(Zlib::Inflate.inflate(Base64.decode64(value)), mode: :object, circular: true)
+      state = Banzai.load_state(value)
       observer = Observer.new(wfid, @wf_gateway, @kv_gateway)
       Rambda::VM.resume(state, observer: observer)
     else
@@ -46,6 +47,18 @@ class Banzai
     Rambda.eval(code, base_workflow_env)
   end
 
+  def self.dump_state(s)
+    # Base64.encode64(Zlib::Deflate.deflate(Oj.dump(state, mode: :object, circular: true))
+    # Base64.encode64(Marshal.dump(s))
+    Oj.dump(s, mode: :object, circular: true)
+  end
+
+  def self.load_state(x)
+    # Oj.load(Zlib::Inflate.inflate(Base64.decode64(value)), mode: :object, circular: true)
+    # Marshal.load(Base64.decode64(x))
+    Oj.load(x, mode: :object, circular: true)
+  end
+
   class Observer
     def initialize(wfid, wf_gateway, kv_gateway)
       @wfid = wfid
@@ -54,9 +67,11 @@ class Banzai
     end
 
     def returned(state)
-      bucket = 'wfstates'
-      key = @wfid
-      @kv_gateway.store(bucket, key, Base64.encode64(Zlib::Deflate.deflate(Oj.dump(state, mode: :object, circular: true))))
+      bucket  = 'wfstates'
+      key     = @wfid
+      dumped_state = Banzai.dump_state(state)
+      puts dumped_state
+      @kv_gateway.store(bucket, key, dumped_state)
     end
 
     def halted

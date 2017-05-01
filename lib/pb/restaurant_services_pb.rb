@@ -19,4 +19,18 @@ module Restaurant
 
     Stub = Service.rpc_stub_class
   end
+  module SousChef
+    class Service
+
+      include GRPC::GenericService
+
+      self.marshal_class_method = :encode
+      self.unmarshal_class_method = :decode
+      self.service_name = 'restaurant.SousChef'
+
+      rpc :Prepare, IngredientRequest, IngredientResponse
+    end
+
+    Stub = Service.rpc_stub_class
+  end
 end

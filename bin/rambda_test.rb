@@ -13,7 +13,6 @@ require 'capabilities'
 require 'banzai'
 
 def main
-
   if ARGV[0]
     wfid = ARGV[0]
     Banzai.new.resume_workflow(wfid)

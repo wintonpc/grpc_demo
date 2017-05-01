@@ -13,10 +13,22 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "restaurant.Recipe" do
     repeated :ingredients, :string, 1
   end
+  add_message "restaurant.IngredientRequest" do
+    optional :name, :string, 1
+  end
+  add_message "restaurant.IngredientResponse" do
+    optional :ingredient, :message, 1, "restaurant.Ingredient"
+  end
+  add_message "restaurant.Ingredient" do
+    optional :description, :string, 1
+  end
 end
 
 module Restaurant
   RecipeRequest = Google::Protobuf::DescriptorPool.generated_pool.lookup("restaurant.RecipeRequest").msgclass
   RecipeResponse = Google::Protobuf::DescriptorPool.generated_pool.lookup("restaurant.RecipeResponse").msgclass
   Recipe = Google::Protobuf::DescriptorPool.generated_pool.lookup("restaurant.Recipe").msgclass
+  IngredientRequest = Google::Protobuf::DescriptorPool.generated_pool.lookup("restaurant.IngredientRequest").msgclass
+  IngredientResponse = Google::Protobuf::DescriptorPool.generated_pool.lookup("restaurant.IngredientResponse").msgclass
+  Ingredient = Google::Protobuf::DescriptorPool.generated_pool.lookup("restaurant.Ingredient").msgclass
 end
