@@ -17,4 +17,4 @@
   (let* ([recipe (get-recipe recipe-name)]
          [ingredient-names (vector->list (.ingredients recipe))])
     ;; (ruby-eval "raise 'oops' if ENV['FAIL']")
-    (map prepare-ingredient ingredient-names)))
+    (for-each prepare-ingredient ingredient-names)))
