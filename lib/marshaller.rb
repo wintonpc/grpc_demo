@@ -2,7 +2,7 @@ module Marshaller
   R = Struct.new(:kind, :type, :data)
 
   def dump(x)
-    Base64.encode64(Marshal.dump(Deflater.new.deflate(x)))
+    Base64.encode64(Zlib::Deflate.deflate(Marshal.dump(Deflater.new.deflate(x))))
   end
 
   class Deflater
@@ -82,7 +82,7 @@ module Marshaller
   end
 
   def load(x)
-    Inflater.new.inflate(Marshal.load(Base64.decode64(x)))
+    Inflater.new.inflate(Marshal.load(Zlib::Inflate.inflate(Base64.decode64(x))))
   end
 
   class Inflater

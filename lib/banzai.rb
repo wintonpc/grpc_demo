@@ -68,14 +68,18 @@ class Banzai
       @wfid = wfid
       @wf_gateway = wf_gateway
       @kv_gateway = kv_gateway
+      @last_store = nil
     end
 
     def returned(state)
-      bucket  = 'wfstates'
-      key     = @wfid
-      dumped_state = Banzai.dump_state(state)
-      # puts dumped_state
-      @kv_gateway.store(bucket, key, dumped_state)
+      if @last_store.nil? || (Time.now - @last_store) > 0.5
+        @last_store = Time.now
+        bucket  = 'wfstates'
+        key     = @wfid
+        dumped_state = Banzai.dump_state(state)
+        # puts dumped_state
+        @kv_gateway.store(bucket, key, dumped_state)
+      end
     end
 
     def halted

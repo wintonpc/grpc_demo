@@ -15,6 +15,7 @@
 (define (bake recipe-name)
   (puts "Baking a " recipe-name)
   (let* ([recipe (get-recipe recipe-name)]
-         [ingredient-names (vector->list (.ingredients recipe))])
-    ;; (ruby-eval "raise 'oops' if ENV['FAIL']")
-    (for-each prepare-ingredient ingredient-names)))
+         [ingredient-names (vector->list (.ingredients recipe))]
+         [ingredients (map prepare-ingredient ingredient-names)])
+    (puts "ready to mix:")
+    (for-each (lambda (i) (puts (.description i))) ingredients)))
