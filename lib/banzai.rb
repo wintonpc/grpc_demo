@@ -49,14 +49,14 @@ class Banzai
 
   def self.dump_state(s)
     # Base64.encode64(Zlib::Deflate.deflate(Oj.dump(state, mode: :object, circular: true))
-    # Base64.encode64(Marshal.dump(s))
-    Oj.dump(s, mode: :object, circular: true)
+    Base64.encode64(Marshal.dump(s))
+    # Oj.dump(s, mode: :object, circular: true)
   end
 
   def self.load_state(x)
     # Oj.load(Zlib::Inflate.inflate(Base64.decode64(value)), mode: :object, circular: true)
-    # Marshal.load(Base64.decode64(x))
-    Oj.load(x, mode: :object, circular: true)
+    Marshal.load(Base64.decode64(x))
+    # Oj.load(x, mode: :object, circular: true)
   end
 
   class Observer
