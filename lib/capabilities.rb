@@ -1,3 +1,6 @@
+require 'pb/restaurant_pb'
+require 'interop'
+
 module Capabilities
   def services
     @services ||= {

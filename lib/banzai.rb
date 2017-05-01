@@ -4,6 +4,8 @@ require 'gateways/workflow_gateway'
 require 'gateways/kv_gateway'
 require 'zlib'
 require 'pp'
+require 'interop'
+require 'marshaller'
 
 class Banzai
   def initialize(wf_gateway=WorkflowGateway.new, kv_gateway=KVGateway.new)
@@ -49,8 +51,9 @@ class Banzai
 
   def self.dump_state(s)
     # Base64.encode64(Zlib::Deflate.deflate(Oj.dump(state, mode: :object, circular: true))
-    Base64.encode64(Marshal.dump(s))
+    # Base64.encode64(Marshal.dump(s))
     # Oj.dump(s, mode: :object, circular: true)
+    Marshaller.dump(s)
   end
 
   def self.load_state(x)
@@ -70,7 +73,7 @@ class Banzai
       bucket  = 'wfstates'
       key     = @wfid
       dumped_state = Banzai.dump_state(state)
-      puts dumped_state
+      # puts dumped_state
       @kv_gateway.store(bucket, key, dumped_state)
     end
 
@@ -99,7 +102,7 @@ class Banzai
     code = <<EOD
 (set! get-service
   (lambda (name)
-    (ruby-call-proc "|x| Capabilities.services[x]" name)))
+    (ruby-call-proc "|x| Interop::ServiceShim.new(x)" name)))
 EOD
     Rambda.eval(code, env)
   end
