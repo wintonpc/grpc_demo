@@ -58,8 +58,9 @@ class Banzai
 
   def self.load_state(x)
     # Oj.load(Zlib::Inflate.inflate(Base64.decode64(value)), mode: :object, circular: true)
-    Marshal.load(Base64.decode64(x))
+    # Marshal.load(Base64.decode64(x))
     # Oj.load(x, mode: :object, circular: true)
+    Marshaller.load(x)
   end
 
   class Observer
