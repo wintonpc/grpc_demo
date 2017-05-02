@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/wintonpc/rambda.git
-  revision: a243e930a0d7971fe4947c9172e30f4f09d1b63a
+  revision: ab928ed1c94b1288b8cd77f168bc047283c366c0
   specs:
     rambda (0.1.0)
       oj
@@ -36,7 +36,7 @@ GEM
       bson (~> 4.1)
     multi_json (1.12.1)
     multipart-post (2.0.0)
-    oj (2.18.2)
+    oj (3.0.4)
     os (0.9.6)
     public_suffix (2.0.5)
     rspec (3.5.0)

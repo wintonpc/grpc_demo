@@ -10,6 +10,18 @@ service SousChef {
   rpc Prepare(IngredientRequest) returns (IngredientResponse) {}
 }
 
+service Mixer {
+  rpc Mix(MixRequest) returns (MixResponse) {}
+}
+
+message MixRequest {
+  repeated string ingredients = 1;
+}
+
+message MixResponse {
+  string description = 1;
+}
+
 message RecipeRequest {
   string name = 1;
 }
@@ -25,3 +37,4 @@ message IngredientRequest {
 message IngredientResponse {
   string description = 1;
 }
+
