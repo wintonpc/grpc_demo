@@ -14,7 +14,6 @@ module SousChef
         else
           raise "I don't know how to prepare '#{req.name}'"
         end
-    ingredient = Restaurant::Ingredient.new(description: desc)
-    Restaurant::IngredientResponse.new(ingredient: ingredient)
+    Restaurant::IngredientResponse.new(description: desc)
   end
 end

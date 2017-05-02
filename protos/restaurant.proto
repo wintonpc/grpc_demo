@@ -15,10 +15,6 @@ message RecipeRequest {
 }
 
 message RecipeResponse {
-  Recipe recipe = 1;
-}
-
-message Recipe {
   repeated string ingredients = 1;
 }
 
@@ -27,9 +23,5 @@ message IngredientRequest {
 }
 
 message IngredientResponse {
-  Ingredient ingredient = 1;
-}
-
-message Ingredient {
   string description = 1;
 }
