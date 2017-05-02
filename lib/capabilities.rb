@@ -3,9 +3,12 @@ require 'interop'
 
 module Capabilities
   def services
+    # host = '172.19.1.109:50051'
+    host = '10.10.14.205:50051'
     @services ||= {
-        cookbook: Restaurant::Cookbook::Stub.new('10.10.13.85:50051', :this_channel_is_insecure),
-        sous_chef: Restaurant::SousChef::Stub.new('10.10.13.85:50051', :this_channel_is_insecure),
+        cookbook: Restaurant::Cookbook::Stub.new(host, :this_channel_is_insecure),
+        sous_chef: Restaurant::SousChef::Stub.new(host, :this_channel_is_insecure),
+        mixer: Restaurant::Mixer::Stub.new(host, :this_channel_is_insecure),
     }
   end
 
