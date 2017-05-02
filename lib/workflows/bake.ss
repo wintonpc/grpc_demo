@@ -1,20 +1,34 @@
-(define (get-recipe name)
-  (puts "Getting recipe")
-  (let* ([cookbook (get-service 'cookbook)]
-         [request  (ruby-call-proc "|x| Restaurant::RecipeRequest.new(name: x)" name)]
-         [response (.get_recipe cookbook request)])
-    (.recipe response)))
+(define-syntax define-rpc
+  (lambda (stx)
+    (let ([proc-name (caadr stx)]
+          [formals (cdadr stx)]
+          [service-name (caaddr stx)]
+          [method (cadaddr stx)]
+          [make-req-bodies (cdddr stx)])
+      `(define (,proc-name ,@formals)
+         (puts (++ ',proc-name " " ,@formals))
+         (,method (get-service ,service-name) ((lambda () ,@make-req-bodies)))))))
+
+(define-rpc (get-recipe name) ['cookbook .get_recipe]
+  (ruby-call-proc "|x| Restaurant::RecipeRequest.new(name: x)" name))
+
+(define (call-service service-name rpc-method desc request)
+  (puts desc)
+  (rpc-method (get-service service-name) request))
+
+;; (define (get-recipe name)
+;;   (.recipe
+;;    (call-service 'cookbook .get_recipe "Getting recipe"
+;;                  )))
 
 (define (prepare-ingredient name)
-  (puts "Preparing " name)
-  (let* ([sous-chef (get-service 'sous_chef)]
-         [request  (ruby-call-proc "|x| Restaurant::IngredientRequest.new(name: x)" name)]
-         [response (.prepare sous-chef request)])
-    (.ingredient response)))
+  (.ingredient
+   (call-service 'sous_chef .prepare (++ "Preparing " name)
+                 (ruby-call-proc "|x| Restaurant::IngredientRequest.new(name: x)" name))))
 
 (define (bake recipe-name)
   (puts "Baking a " recipe-name)
-  (let* ([recipe (get-recipe recipe-name)]
+  (let* ([recipe (.recipe (get-recipe recipe-name))]
          [ingredient-names (vector->list (.ingredients recipe))]
          [ingredients (map prepare-ingredient ingredient-names)])
     (puts "ready to mix:")
