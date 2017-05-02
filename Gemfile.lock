@@ -1,5 +1,6 @@
-PATH
-  remote: /home/pwinton/git/rambda
+GIT
+  remote: git://github.com/wintonpc/rambda.git
+  revision: a243e930a0d7971fe4947c9172e30f4f09d1b63a
   specs:
     rambda (0.1.0)
       oj
