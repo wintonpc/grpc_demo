@@ -2,6 +2,7 @@ require 'pb/restaurant_pb'
 
 module SousChef
   def prepare(req, _)
+    puts "SousChef received request for #{req.name}"
     desc =
         case req.name
         when 'flour' then 'a cup of flour'
