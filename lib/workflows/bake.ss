@@ -1,10 +1,16 @@
+(define (make-recipe-request name)
+  (ruby-call-proc "|x| Restaurant::RecipeRequest.new(name: x)" name))
+
+(define (make-ingredient-request name)
+  (ruby-call-proc "|x| Restaurant::IngredientRequest.new(name: x)" name))
+
 (define-rpc (get-recipe name)
   [cookbook .get_recipe]
-  (ruby-call-proc "|x| Restaurant::RecipeRequest.new(name: x)" name))
+  (make-recipe-request name))
 
 (define-rpc (prepare-ingredient name)
   [sous_chef .prepare]
-  (ruby-call-proc "|x| Restaurant::IngredientRequest.new(name: x)" name))
+  (make-ingredient-request name))
 
 (define (bake recipe-name)
   (pipe recipe-name
