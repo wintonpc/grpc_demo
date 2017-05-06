@@ -13,15 +13,28 @@
          (define (,maker-name ,@attr-names)
            (make-proto ,class-name ,attr-stx))))))
 
+(define-syntax define-rpc
+  (lambda (stx)
+    (let* ([proc-name (caadr stx)]
+           [formals (cdadr stx)]
+           [rpc-info (caddr stx)]
+           [service-name (car rpc-info)]
+           [method (cadr rpc-info)]
+           [request-proto (caddr rpc-info)]
+           [make-req-bodies (cdddr stx)])
+      `(define (,proc-name ,@formals)
+         (puts (++ ',proc-name " " ,@formals))
+         (,method (get-service ',service-name) ((lambda () ,@make-req-bodies)))))))
+
 (define-proto recipe-request "Restaurant::RecipeRequest" (name))
 (define-proto ingredient-request "Restaurant::IngredientRequest" (name))
 
 (define-rpc (get-recipe name)
-  [cookbook .get_recipe]
+  [cookbook .get_recipe recipe-request]
   (make-recipe-request name))
 
 (define-rpc (prepare-ingredient name)
-  [sous_chef .prepare]
+  [sous_chef .prepare ingredient-request]
   (make-ingredient-request name))
 
 (define (bake recipe-name)

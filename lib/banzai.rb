@@ -109,16 +109,7 @@ class Banzai
   (lambda (name)
     (ruby-call-proc "|x| Interop::ServiceShim.new(x)" name)))
 
-(define-syntax define-rpc
-  (lambda (stx)
-    (let ([proc-name (caadr stx)]
-          [formals (cdadr stx)]
-          [service-name (caaddr stx)]
-          [method (cadaddr stx)]
-          [make-req-bodies (cdddr stx)])
-      `(define (,proc-name ,@formals)
-         (puts (++ ',proc-name " " ,@formals))
-         (,method (get-service ',service-name) ((lambda () ,@make-req-bodies)))))))
+
 EOD
     Rambda.eval(code, env)
   end
