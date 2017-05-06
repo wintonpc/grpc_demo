@@ -5,8 +5,8 @@
 (define-proto (ingredient-request name)
   ["Restaurant::IngredientRequest"])
 
-(define-proto (mix-request tool ingredients)
-  ["Restaurant::MixRequest"])
+(define-proto (mix-request ingredients tool) ; mix-request has attributes 'ingredients'
+  ["Restaurant::MixRequest"])                ; and 'tool' (in no particular order)
 
 
 ;; rpc call mappings
@@ -27,8 +27,8 @@
         get-recipe
         .ingredients
         (map prepare-ingredient)
-        (tap (puts "Done preparing ingredients. Time to mix."))
         (map .description)
+        (tap (puts "Done preparing ingredients. Time to mix."))
         (mix-ingredients "kitchenaid")
         .description
         puts))

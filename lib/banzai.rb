@@ -117,11 +117,10 @@ class Banzai
     (let* ([name (caadr stx)]
            [class-name (caaddr stx)]
            [attr-names (cdadr stx)]
-           [maker-name (string->symbol (++ "make-" name))]
-           [attr-stx (cons 'make-map (flatmap (lambda (n) (list `(quote ,n) n)) attr-names))])
+           [maker-name (string->symbol (++ "make-" name))])
       `(begin
-         (define (,maker-name ,@attr-names)
-           (make-proto ,class-name ,attr-stx))
+         (define (,maker-name attrs)
+           (make-proto ,class-name attrs))
          (define ,name (list ,class-name ,maker-name (quote ,attr-names)))))))
 
 (define-syntax define-rpc
@@ -131,12 +130,13 @@ class Banzai
            [rpc-info (caddr stx)]
            [service-name (car rpc-info)]
            [method (cadr rpc-info)]
-           [request-proto (caddr rpc-info)])
+           [request-proto (caddr rpc-info)]
+           [attr-stx (cons 'make-map (flatmap (lambda (n) (list `(quote ,n) n)) formals))])
       `(define (,proc-name ,@formals)
          (puts (++ ',proc-name " " (join " " (list->vector (list ,@formals)))))
          (let* ([proto ,request-proto]
                 [maker (cadr proto)])
-           (,method (get-service ',service-name) (maker ,@formals)))))))
+           (,method (get-service ',service-name) (maker ,attr-stx)))))))
 EOD
     Rambda.eval(code, env)
   end
