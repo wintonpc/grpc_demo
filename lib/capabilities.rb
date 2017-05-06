@@ -7,6 +7,7 @@ module Capabilities
     @services ||= {
         cookbook: Restaurant::Cookbook::Stub.new(host, :this_channel_is_insecure),
         sous_chef: Restaurant::SousChef::Stub.new(host, :this_channel_is_insecure),
+        mixer: Restaurant::Mixer::Stub.new(host, :this_channel_is_insecure),
     }
   end
 

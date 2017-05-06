@@ -5,6 +5,9 @@
 (define-proto (ingredient-request name)
   ["Restaurant::IngredientRequest"])
 
+(define-proto (mix-request tool ingredients)
+  ["Restaurant::MixRequest"])
+
 
 ;; rpc call mappings
 (define-rpc (get-recipe name)            ; the 'get-recipe' function takes a parameter 'name'
@@ -15,6 +18,8 @@
 (define-rpc (prepare-ingredient name)
   [sous_chef .prepare ingredient-request])
 
+(define-rpc (mix-ingredients tool ingredients)
+  [mixer .mix mix-request])
 
 ;; the workflow function
 (define (bake recipe-name)
@@ -22,5 +27,8 @@
         get-recipe
         .ingredients
         (map prepare-ingredient)
-        (tap (puts "\nReady to mix:"))
-        (for-each (lambda (i) (puts (.description i))))))
+        (tap (puts "Done preparing ingredients. Time to mix."))
+        (map .description)
+        (mix-ingredients "kitchenaid")
+        .description
+        puts))

@@ -33,4 +33,18 @@ module Restaurant
 
     Stub = Service.rpc_stub_class
   end
+  module Mixer
+    class Service
+
+      include GRPC::GenericService
+
+      self.marshal_class_method = :encode
+      self.unmarshal_class_method = :decode
+      self.service_name = 'restaurant.Mixer'
+
+      rpc :Mix, MixRequest, MixResponse
+    end
+
+    Stub = Service.rpc_stub_class
+  end
 end

@@ -133,7 +133,7 @@ class Banzai
            [method (cadr rpc-info)]
            [request-proto (caddr rpc-info)])
       `(define (,proc-name ,@formals)
-         (puts (++ ',proc-name " " ,@formals))
+         (puts (++ ',proc-name " " (join " " (list->vector (list ,@formals)))))
          (let* ([proto ,request-proto]
                 [maker (cadr proto)])
            (,method (get-service ',service-name) (maker ,@formals)))))))
