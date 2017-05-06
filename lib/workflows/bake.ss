@@ -3,9 +3,9 @@
 
 (define-syntax define-proto
   (lambda (stx)
-    (let* ([name (cadr stx)]
-           [class-name (caddr stx)]
-           [attr-names (cadddr stx)]
+    (let* ([name (caadr stx)]
+           [class-name (caaddr stx)]
+           [attr-names (cdadr stx)]
            [maker-name (string->symbol (++ "make-" name))]
            [attr-stx (cons 'make-map (flatmap (lambda (n) (list `(quote ,n) n)) attr-names))])
       `(begin
@@ -27,8 +27,11 @@
                 [maker (cadr proto)])
            (,method (get-service ',service-name) (maker ,@formals)))))))
 
-(define-proto recipe-request "Restaurant::RecipeRequest" (name))
-(define-proto ingredient-request "Restaurant::IngredientRequest" (name))
+(define-proto (recipe-request name)
+  ["Restaurant::RecipeRequest"])
+
+(define-proto (ingredient-request name)
+  ["Restaurant::IngredientRequest"])
 
 (define-rpc (get-recipe name)
   [cookbook .get_recipe recipe-request])
