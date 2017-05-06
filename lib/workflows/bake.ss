@@ -28,7 +28,7 @@
            (,method (get-service ',service-name) (maker ,@formals)))))))
 
 (define-proto recipe-request "Restaurant::RecipeRequest" (name))
-(define-proto ingredient-request "Restaurant::IngredientRequestt" (name))
+(define-proto ingredient-request "Restaurant::IngredientRequest" (name))
 
 (define-rpc (get-recipe name)
   [cookbook .get_recipe recipe-request])
