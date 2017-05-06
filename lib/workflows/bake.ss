@@ -1,8 +1,11 @@
+(define (make-proto class-name attrs)
+  (ruby-call-proc (++ "|attrs| " class-name ".new(attrs)") attrs))
+
 (define (make-recipe-request name)
-  (ruby-call-proc "|x| Restaurant::RecipeRequest.new(name: x)" name))
+  (make-proto "Restaurant::RecipeRequest" {name name}))
 
 (define (make-ingredient-request name)
-  (ruby-call-proc "|x| Restaurant::IngredientRequest.new(name: x)" name))
+  (make-proto "Restaurant::IngredientRequest" {name name}))
 
 (define-rpc (get-recipe name)
   [cookbook .get_recipe]
