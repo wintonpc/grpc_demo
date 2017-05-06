@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'grpc'
-gem 'rambda', github: 'wintonpc/rambda'
+gem 'rambda', path: '/home/pwinton/git/rambda' # github: 'wintonpc/rambda'
 gem 'oj'
 gem 'mongo'
 

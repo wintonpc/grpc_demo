@@ -7,9 +7,9 @@
   (ruby-call-proc "|x| Restaurant::IngredientRequest.new(name: x)" name))
 
 (define (bake recipe-name)
-  (puts "\nBaking a " recipe-name)
-  (let* ([recipe (get-recipe recipe-name)]
-         [ingredient-names (vector->list (.ingredients recipe))]
-         [ingredients (map prepare-ingredient ingredient-names)])
-    (puts "\nReady to mix:")
-    (for-each (lambda (i) (puts (.description i))) ingredients)))
+  (pipe recipe-name
+        get-recipe
+        .ingredients
+        (map prepare-ingredient)
+        (tap (puts "\nReady to mix:"))
+        (for-each (lambda (i) (puts (.description i))))))
