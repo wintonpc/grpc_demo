@@ -14,23 +14,11 @@
            (make-proto ,class-name ,attr-stx))))))
 
 (define-proto recipe-request "Restaurant::RecipeRequest" (name))
-
-
-
-(define (make-recipe-request name)
-  (make-proto "Restaurant::RecipeRequest" {name name}))
-
-(define (make-ingredient-request name)
-  (make-proto "Restaurant::IngredientRequest" {name name}))
-
-
-
-(define recipe-request (list "Restaurant::RecipeRequest" (list name)))
-
-
+(define-proto ingredient-request "Restaurant::IngredientRequest" (name))
 
 (define-rpc (get-recipe name)
-  [cookbook .get_recipe recipe-request])
+  [cookbook .get_recipe]
+  (make-recipe-request name))
 
 (define-rpc (prepare-ingredient name)
   [sous_chef .prepare]
