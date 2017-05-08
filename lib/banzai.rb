@@ -71,7 +71,7 @@ class Banzai
       @last_store = nil
     end
 
-    def returned(state)
+    def returned(vm_id, state)
       if @last_store.nil? || (Time.now - @last_store) > 0.5
         @last_store = Time.now
         bucket  = 'wfstates'
@@ -82,7 +82,7 @@ class Banzai
       end
     end
 
-    def halted
+    def halted(vm_id)
       bucket = 'wfstates'
       key = @wfid
       @kv_gateway.delete(bucket, key)
