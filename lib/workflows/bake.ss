@@ -22,12 +22,18 @@
   [mixer .mix mix-request])
 
 
+(define (async-map p xs)
+  (map (lambda (x)
+         (async (lambda () (p x))))
+       xs))
+
 ;; the workflow function
 (define (bake recipe-name)
   (pipe recipe-name
         get-recipe
         .ingredients
-        (map prepare-ingredient)
+        (async-map prepare-ingredient)
+        wait-all
         (map .description)
         (tap (puts "Done preparing ingredients. Time to mix."))
         (mix-ingredients "kitchenaid")
