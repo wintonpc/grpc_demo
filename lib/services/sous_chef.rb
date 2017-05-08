@@ -13,7 +13,7 @@ module SousChef
         else
           raise "I don't know how to prepare '#{req.name}'"
         end
-    sleep(1)
+    sleep(1 + rand * 3)
     Restaurant::IngredientResponse.new(description: desc)
   end
 end

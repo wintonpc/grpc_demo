@@ -8,10 +8,12 @@ class KVGateway
   end
 
   def store(bucket, key, value)
+    # puts "storing #{key}"
     @client[:data].update_one({b: bucket, k: key}, {'$set': {v: value}}, upsert: true)
   end
 
   def delete(bucket, key)
+    puts "deleting #{key}"
     @client[:data].delete_one({b: bucket, k: key})
   end
 

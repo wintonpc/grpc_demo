@@ -48,12 +48,24 @@ module Marshaller
           when Rambda::Env
             r = R.new(:env)
             seen[x.object_id] = r
-            r.data = [deflate(x.hash), deflate(x.parent)]
+            r.data = [deflate(x.hash), deflate(x.parent), deflate(x.read_only)]
             r
           when Rambda::Closure
             r = R.new(:closure)
             seen[x.object_id] = r
             r.data = [deflate(x.body), deflate(x.env), deflate(x.formals), deflate(x.lambda_exp)]
+            r
+          when Rambda::AsyncExpr
+            r = R.new(:async_expr)
+            seen[x.object_id] = r
+            r.data = {
+                proc: deflate(x.proc),
+                env: deflate(x.env),
+                done: deflate(x.done),
+                value: deflate(x.value),
+                exception: deflate(x.exception),
+                vm_id: deflate(x.vm_id)
+            }
             r
           when Google::Protobuf::RepeatedField
             r = R.new(:pb_repeated_field, pb_item_type(x))
@@ -82,12 +94,18 @@ module Marshaller
   end
 
   def load(x)
-    Inflater.new.inflate(Marshal.load(Zlib::Inflate.inflate(Base64.decode64(x))))
+    inflater = Inflater.new
+    state = inflater.inflate(Marshal.load(Zlib::Inflate.inflate(Base64.decode64(x))))
+    {state: state, async_exprs: inflater.async_exprs}
   end
 
   class Inflater
     def seen
       @seen ||= {}
+    end
+
+    def async_exprs
+      @async_exprs ||= []
     end
 
     def inflate(x)
@@ -126,9 +144,10 @@ module Marshaller
             when :env
               r = Rambda::Env.new
               seen[x.object_id] = r
-              dhash, dparent = x.data
+              dhash, dparent, dread_only = x.data
               r.parent = inflate(dparent)
               r.env = inflate(dhash)
+              r.read_only = inflate(dread_only)
               r
             when :closure
               r = Rambda::Closure.new
@@ -138,6 +157,19 @@ module Marshaller
               r.env = inflate(denv)
               r.formals = inflate(dformals)
               r.lambda_exp = inflate(dlambda_exp)
+              r
+            when :async_expr
+              r = Rambda::AsyncExpr.new
+              seen[x.object_id] = r
+              async_exprs.push(r)
+              d = x.data
+              r.proc = inflate(d[:proc])
+              r.env = inflate(d[:env])
+              r.done = inflate(d[:done])
+              r.value = inflate(d[:value])
+              r.exception = inflate(d[:exception])
+              r.vm_id = inflate(d[:vm_id])
+              # TODO: rehydrate thread and mutex
               r
             when :primitive
               Rambda::Primitive.new(inflate(x.data))

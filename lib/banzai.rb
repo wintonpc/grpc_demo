@@ -19,18 +19,39 @@ class Banzai
     observer = Observer.new(id, @wf_gateway, @kv_gateway)
     Capabilities.register_workflows
     env = Banzai.make_workflow_env
-    Rambda.apply(env.look_up(name), *args, env, observer: observer)
+    Rambda.apply(env.look_up(name), *args, env, observer: observer, vm_id: 'root')
   end
 
   def resume_workflow(wfid)
     puts "Resuming workflow #{wfid}"
-    bucket           = 'wfstates'
-    key              = wfid
+    bucket = 'wfstates'
+    key = Banzai.skey(wfid, 'root')
     value = @kv_gateway.fetch(bucket, key)
     if value
-      state = Banzai.load_state(value)
+      h = Banzai.load_state(value)
+      state = h[:state]
+      async_exprs = h[:async_exprs]
       observer = Observer.new(wfid, @wf_gateway, @kv_gateway)
-      Rambda::VM.resume(state, observer: observer)
+      # TODO: resume in reverse spawn order, so waiter threads have an actual thread to wait on.
+      # Or, block resume until all threads are started.
+      async_exprs.each do |ae|
+        ae.mutex = Mutex.new
+        ae_key = Banzai.skey(wfid, ae.vm_id)
+        if !ae.done
+          raw_state = @kv_gateway.fetch(bucket, ae_key)
+          if raw_state.nil?
+            puts "No saved state for AsyncExpr #{ae.proc.env.look_up(:x)}; spawning fresh"
+            Rambda::BuiltIn.spawn_async(ae, observer)
+          else
+            puts "Found saved state for #{ae.proc.env.look_up(:x)}; resuming"
+            ae_state = Banzai.load_state(raw_state)[:state]
+            Rambda::BuiltIn.resume_async(ae, ae_state, observer)
+          end
+        else
+          puts 'Nothing to do for completed AsyncExpr'
+        end
+      end
+      Rambda::VM.resume(state, observer: observer, vm_id: 'root')
     else
       puts "Workflow #{wfid} already completed"
     end
@@ -71,11 +92,15 @@ class Banzai
       @last_store = nil
     end
 
+    def started(vm_id)
+      puts "Running VM #{vm_id}"
+    end
+
     def returned(vm_id, state)
-      if @last_store.nil? || (Time.now - @last_store) > 0.5
+      if true # @last_store.nil? || (Time.now - @last_store) > 0.5
         @last_store = Time.now
         bucket  = 'wfstates'
-        key     = @wfid
+        key     = Banzai.skey(@wfid, vm_id)
         dumped_state = Banzai.dump_state(state)
         # puts dumped_state
         @kv_gateway.store(bucket, key, dumped_state)
@@ -84,9 +109,13 @@ class Banzai
 
     def halted(vm_id)
       bucket = 'wfstates'
-      key = @wfid
+      key = Banzai.skey(@wfid, vm_id)
       @kv_gateway.delete(bucket, key)
     end
+  end
+
+  def self.skey(wfid, vmid)
+    "#{wfid}/#{vmid}"
   end
 
   private

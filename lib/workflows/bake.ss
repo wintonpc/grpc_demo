@@ -32,7 +32,11 @@
   (pipe recipe-name
         get-recipe
         .ingredients
-        (async-map prepare-ingredient)
+        (async-map (lambda (i)
+                     (let ([r (prepare-ingredient i)])
+                       (puts "done preparing " i)
+                       r)))
+        (tap (puts "wait-all"))
         wait-all
         (map .description)
         (tap (puts "Done preparing ingredients. Time to mix."))
